@@ -1,0 +1,206 @@
+﻿
+@{
+    ViewBag.Title = "SendSms";
+}
+<link href="~/Content/Site.css" rel="stylesheet" />
+<h2>SendSms</h2>
+
+<div class="form-group">
+    <label for="Title">Title</label>
+    <input type="text" class="form-control" id="Title"/>
+    <span class="error">Title required</span>
+
+</div>
+
+<div class="form-group">
+    <label for="Text">Message Text</label>
+    <textarea id="Text" rows="4" cols="50" class="form-control"></textarea>
+    <span class="error">Text required</span>
+
+</div>
+
+<div class="form-group">
+    <label for="number">Recipent</label>
+    <input type="number" id="number" />
+    <span class="error">Number required</span>
+
+
+    <button class="btn btn-primary" id="add">Add New Recipent</button>
+</div>
+
+<button class="btn btn-success" id="send">Send</button>
+
+
+<div class="recipNumbers">
+    <table class="table table-bordered table-hover tab" >
+        <thead>
+            <tr>Recipient Number</tr>
+        </thead>
+
+        <tbody id="numTable">
+            
+        </tbody>
+    </table>
+</div>
+
+    
+<div class="modal fade" tabindex="-1" id="successModal"
+     data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                </button>
+                <h4 class="modal-title">Success</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <h2 class="modal-title"> Messages Added Successful!</h2>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success"
+                        data-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="Error" class="alert alert-danger collapse">
+    <a id="linkClose" href="#" class="close">&times;</a>
+    <div id="ErrorText"></div>
+</div>
+        
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            var Recipients = [];
+            
+            $('#send').click(function () {
+
+                if (Validation()) {
+                    $.ajax({
+                        type: 'post',
+                        url: '/api/Sms/Send',
+
+                        data: {
+                            MessageText: $('#Text').val(),
+                            MessageTitle: $('#Title').val(),
+                            Recipients: Recipients
+
+                        },
+                        success: function (result) {
+                            $('#Text').val('');
+                            $('#Title').val('');
+                            $('#number').val('');
+                            Recipients = [];
+                            $('#numTable').html('');
+
+
+                            $('#successModal').modal('show');
+                           
+
+                            
+
+                        },
+                        error: function (jqXHR) {
+                            $('#ErrorText').text(jqXHR.responseText);
+                            $('#Error').show('fade');
+                        }
+                    });
+                }
+
+            });
+
+
+                $('#add').click(function () {
+                   
+                    if (Validation()) {
+                        Recipients.push({
+                            RecipientNumber: $('#number').val()
+                        });
+
+                        $('#numTable').html('');
+
+                        $.each(Recipients, function (key, val) {
+
+                            $row = $("<tr/ id=" + key + ">");
+                            $row.append("<td>" + val.RecipientNumber + "</td> <td> <button class='btn btn-danger del' rec_number=" + val.RecipientNumber + " id=" + key + "> Delete </button></td>");
+                            $('#numTable').append($row);
+                        });
+                    }
+
+
+                });
+
+               
+               
+            
+                $('.tab').on("click", ".del", function () {
+
+                    var number = $(this).attr("rec_number");
+                    var id = $(this).attr("id");
+
+
+                    var Pos = Recipients.map(function (x) { return x.RecipientNumber }).indexOf(number);
+
+                    Recipients.splice(Pos, 1)
+
+               
+                    $('#' + id).fadeOut('slow');
+
+
+
+                });
+
+
+        });
+
+        function Validation() {
+            var validation = true;
+            var TitleLength = $('#Title').val().length > 11
+
+            
+            if ($('#Text').val() == "") {
+
+                validation = false;
+                $('#Text').siblings('.error').css('visibility', 'visible');
+
+            }
+            else {
+                $('#Text').siblings('.error').css('visibility', 'hidden');
+
+            }
+
+            if ($('#Title').val() == "" || !isNaN($('#Title').val()) || TitleLength ) {
+
+                validation = false;
+                $('#Title').siblings('.error').css('visibility', 'visible');
+
+            }
+            else {
+                $('#Title').siblings('.error').css('visibility', 'hidden');
+
+            }
+
+            if ($('#number').val() == "" || isNaN($('#number').val()) || $('#number').val().length != 11 ) {
+
+                validation = false;
+                $('#number').siblings('.error').css('visibility', 'visible');
+
+            }
+            else {
+
+                $('#number').siblings('.error').css('visibility', 'hidden');
+
+
+            }
+
+
+            return validation
+        }
+    </script>
+}

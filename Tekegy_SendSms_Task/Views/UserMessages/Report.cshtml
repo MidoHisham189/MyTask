@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Tekegy_SendSms_Task.ViewModel.ReportViewModel>
+@{
+    ViewBag.Title = "Report";
+}
+
+<h2>Report</h2>
+
+
+@if (Model.Count() <= 0)
+{
+    <h1>You Don't Have Any Report</h1>
+}
+else
+{
+    foreach (var message in Model)
+    {
+        @message.MessageID
+
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <td>Mobile Number</td>
+                    <td>Sent Time</td>
+                    <td>Message Text</td>
+                    <td>Message Cost</td>
+                    <td>Message Status</td>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr class="success">
+                    <td>@message.MobileNumber</td>
+                    <td>@message.SentTime</td>
+                    <td>@message.MessageText</td>
+                    <td>@message.MessageCost</td>
+                    <td>@message.MessageStatus</td>
+                </tr>
+            </tbody>
+        </table>
+    }
+}

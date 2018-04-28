@@ -1,0 +1,22 @@
+﻿@model Tekegy_SendSms_Task.ViewModel.MobileViewModel
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary();
+    <div class="form-group">
+        @Html.LabelFor(m=>m.mobile.MobileNumber)
+        @Html.TextBoxFor(m => m.mobile.MobileNumber, new {@class="form-control" })
+    </div>
+
+    <div class="form-group">
+        
+        @Html.DropDownListFor(m=> m.mobile.CtegoryId, new SelectList(Model.Gategories,"CategoryId","CategoryName"),"Select Category",new {@class="form-control"})
+    </div>
+    
+    <button class="btn btn-primary">Add Mobile</button>
+}

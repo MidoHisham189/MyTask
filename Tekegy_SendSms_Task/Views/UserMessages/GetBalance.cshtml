@@ -1,0 +1,30 @@
+﻿@model int
+
+@{
+    ViewBag.Title = "GetBalance";
+}
+
+<h2>GetBalance</h2>
+
+<h1> Balance Is : <label class="danger bal"></label> </h1>
+
+<input type="text" id="MobileId" value="@Model" style="visibility:hidden" />
+@section scripts {
+
+    <script>
+        $(document).ready(function () {
+          
+            var value = $('#MobileId').val();
+            $.ajax({
+                type:'Get',
+                url: '/api/Sms/balance',
+                data: {
+                    MobileId : value
+                },
+                success: function(result) {
+                    $('.bal').text(result);
+                }
+            })
+        });
+    </script>
+}
